@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-label="lru-cache-cpp">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6B2FB5"/>
+      <stop offset="100%" stop-color="#4A1E86"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="300" fill="url(#bg)"/>
+  <text x="600" y="135" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="72" font-weight="700" fill="#FFFFFF">lru-cache-cpp</text>
+  <text x="600" y="190" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="30" font-weight="400" fill="#EDE4FB">A header-only O(1) LRU cache for C++17</text>
+  <text x="600" y="240" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#C9B3EE" letter-spacing="1">C++17 &#183; header-only &#183; CMake/CTest</text>
+</svg>
