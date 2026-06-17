@@ -30,6 +30,13 @@ public:
     using value_type = Value;
     using size_type = std::size_t;
 
+    /// Snapshot of cumulative lookup statistics. Only `get` updates these
+    /// counters; `peek` and `contains` leave them untouched.
+    struct Stats {
+        size_type hits = 0;    ///< Number of `get` calls that found the key.
+        size_type misses = 0;  ///< Number of `get` calls that did not.
+    };
+
     /// Constructs a cache that holds at most `capacity` entries.
     /// @throws std::invalid_argument if `capacity` is zero.
     explicit LRUCache(size_type capacity) : capacity_(capacity) {
@@ -65,8 +72,10 @@ public:
     std::optional<Value> get(const Key& key) {
         auto it = index_.find(key);
         if (it == index_.end()) {
+            ++stats_.misses;
             return std::nullopt;
         }
+        ++stats_.hits;
         touch(it->second);
         return it->second->second;
     }
@@ -114,6 +123,12 @@ public:
     /// True if the cache holds no entries.
     bool empty() const noexcept { return index_.empty(); }
 
+    /// Returns the cumulative hit/miss counters accumulated by `get`.
+    Stats stats() const noexcept { return stats_; }
+
+    /// Resets the hit/miss counters to zero. Does not affect cached entries.
+    void reset_stats() noexcept { stats_ = Stats{}; }
+
 private:
     using list_type = std::list<std::pair<Key, Value>>;
     using iterator = typename list_type::iterator;
@@ -133,6 +148,7 @@ private:
     size_type capacity_;
     list_type items_;                              // front = MRU, back = LRU
     std::unordered_map<Key, iterator> index_;      // key -> node in `items_`
+    Stats stats_;                                  // cumulative get hit/miss counters
 };
 
 }  // namespace lru
