@@ -71,6 +71,18 @@ public:
         return it->second->second;
     }
 
+    /// Looks up `key` without affecting recency order. On a hit, returns the
+    /// stored value; on a miss, returns `std::nullopt`. Unlike `get`, `peek`
+    /// does not refresh recency, so it can inspect the cache without disturbing
+    /// eviction behaviour.
+    std::optional<Value> peek(const Key& key) const {
+        auto it = index_.find(key);
+        if (it == index_.end()) {
+            return std::nullopt;
+        }
+        return it->second->second;
+    }
+
     /// Returns true if `key` is present, without affecting recency order.
     bool contains(const Key& key) const {
         return index_.find(key) != index_.end();
