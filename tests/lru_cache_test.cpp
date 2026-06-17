@@ -119,4 +119,77 @@ TEST(capacity_boundary) {
     CHECK_EQ(*cache.get(2), 200);
 }
 
+TEST(peek_returns_value_without_refreshing_recency) {
+    LRUCache<int, std::string> cache(2);
+    cache.put(1, "one");
+    cache.put(2, "two");
+
+    // Peek key 1: it must NOT become most-recently-used.
+    auto p = cache.peek(1);
+    CHECK(p.has_value());
+    CHECK_EQ(*p, std::string("one"));
+
+    // Key 1 is still the LRU, so inserting key 3 should evict key 1, not key 2.
+    cache.put(3, "three");
+    CHECK(!cache.contains(1));
+    CHECK(cache.contains(2));
+    CHECK(cache.contains(3));
+}
+
+TEST(peek_miss_returns_nullopt) {
+    LRUCache<int, std::string> cache(2);
+    cache.put(1, "one");
+
+    auto missing = cache.peek(42);
+    CHECK(!missing.has_value());
+    CHECK(missing == std::nullopt);
+    CHECK(cache.contains(1));
+}
+
+TEST(stats_count_hits_and_misses) {
+    LRUCache<int, std::string> cache(2);
+    cache.put(1, "one");
+    cache.put(2, "two");
+
+    // Fresh cache: no lookups recorded yet.
+    CHECK_EQ(cache.stats().hits, static_cast<std::size_t>(0));
+    CHECK_EQ(cache.stats().misses, static_cast<std::size_t>(0));
+
+    cache.get(1);   // hit
+    cache.get(2);   // hit
+    cache.get(99);  // miss
+
+    CHECK_EQ(cache.stats().hits, static_cast<std::size_t>(2));
+    CHECK_EQ(cache.stats().misses, static_cast<std::size_t>(1));
+}
+
+TEST(peek_does_not_update_stats) {
+    LRUCache<int, std::string> cache(2);
+    cache.put(1, "one");
+
+    cache.peek(1);   // hit on a real key, but must not count
+    cache.peek(42);  // miss, but must not count
+
+    CHECK_EQ(cache.stats().hits, static_cast<std::size_t>(0));
+    CHECK_EQ(cache.stats().misses, static_cast<std::size_t>(0));
+}
+
+TEST(reset_stats_clears_counters) {
+    LRUCache<int, std::string> cache(2);
+    cache.put(1, "one");
+
+    cache.get(1);   // hit
+    cache.get(99);  // miss
+    CHECK_EQ(cache.stats().hits, static_cast<std::size_t>(1));
+    CHECK_EQ(cache.stats().misses, static_cast<std::size_t>(1));
+
+    cache.reset_stats();
+    CHECK_EQ(cache.stats().hits, static_cast<std::size_t>(0));
+    CHECK_EQ(cache.stats().misses, static_cast<std::size_t>(0));
+
+    // Counting resumes after a reset.
+    cache.get(1);
+    CHECK_EQ(cache.stats().hits, static_cast<std::size_t>(1));
+}
+
 SIMPLE_TEST_MAIN()
