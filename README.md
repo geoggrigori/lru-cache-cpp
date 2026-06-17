@@ -18,6 +18,10 @@ and get a fixed-capacity cache with **O(1)** insert, lookup, and eviction.
 - **Templated** — works with any hashable key type and any value type.
 - **Recency-aware** — `get` refreshes an entry so frequently used keys survive
   eviction.
+- **Non-mutating `peek`** — inspect a value without touching recency order or
+  statistics.
+- **Hit/miss statistics** — `stats()` reports cumulative `get` hits and misses,
+  and `reset_stats()` clears them.
 - **`std::optional` lookups** — a miss returns `std::nullopt`, no exceptions on
   the hot path.
 - **Modern C++17**, no third-party dependencies.
@@ -28,10 +32,27 @@ and get a fixed-capacity cache with **O(1)** insert, lookup, and eviction.
 | ---------------- | ------ |
 | `put`            | O(1)   |
 | `get`            | O(1)   |
+| `peek`           | O(1)   |
 | `contains`       | O(1)   |
 | `erase`          | O(1)   |
 | eviction (LRU)   | O(1)   |
+| `stats`/`reset_stats` | O(1) |
 | `size`/`capacity`| O(1)   |
+
+## API
+
+| Method                       | Description                                                              |
+| ---------------------------- | ------------------------------------------------------------------------ |
+| `put(key, value)`            | Insert or update an entry and mark it most-recently-used.                |
+| `get(key) -> optional<V>`    | Look up a key, refresh its recency, and record a hit/miss in the stats.  |
+| `peek(key) -> optional<V>`   | Look up a key **without** changing recency order or statistics.          |
+| `contains(key) -> bool`      | Test for presence without affecting recency.                             |
+| `erase(key) -> bool`         | Remove an entry; returns whether one was removed.                        |
+| `clear()`                    | Remove all entries (statistics are unaffected).                          |
+| `stats() -> Stats`           | Cumulative `{ hits, misses }` accumulated by `get`.                      |
+| `reset_stats()`              | Reset the hit/miss counters to zero.                                     |
+| `size()` / `capacity()`      | Current entry count / maximum capacity.                                  |
+| `empty() -> bool`            | Whether the cache holds no entries.                                      |
 
 ## How it works
 
@@ -82,6 +103,14 @@ int main() {
 
     auto miss = cache.get(2);
     std::cout << miss.has_value() << "\n";   // 0  (std::nullopt on a miss)
+
+    // peek inspects a value without promoting it or counting in the stats.
+    std::cout << *cache.peek(1) << "\n";     // one  (recency unchanged)
+
+    // stats() reports cumulative get() hits and misses (peek is not counted).
+    auto s = cache.stats();
+    std::cout << s.hits << " " << s.misses << "\n";  // 1 1
+    cache.reset_stats();
 }
 ```
 
@@ -93,6 +122,8 @@ one
 1
 1
 0
+one
+1 1
 ```
 
 ## Building and testing
@@ -121,7 +152,8 @@ ctest --test-dir build --output-on-failure
 
 The tests cover put/get basics, LRU eviction on overflow, recency refresh on
 `get`, updating an existing key without growing, `erase`/`clear`, the capacity
-boundary, and `std::nullopt` on a miss.
+boundary, `std::nullopt` on a miss, non-mutating `peek` (no recency change, no
+stats change), and hit/miss statistics with `reset_stats`.
 
 ## Consuming the header
 
