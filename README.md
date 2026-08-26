@@ -1,178 +1,123 @@
-![lru-cache-cpp](assets/banner.svg)
+<!-- ══════════════════════════ TÍTULO ══════════════════════════ -->
+<div align="center">
+  <img src="docs/title-banner.svg" width="100%" alt="lru-cache-cpp"/>
+</div>
 
-![C++17](https://img.shields.io/badge/C%2B%2B-17-blue.svg)
-![CMake](https://img.shields.io/badge/build-CMake-064F8C.svg)
-![CTest](https://img.shields.io/badge/tests-CTest-success.svg)
-![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
-![header-only](https://img.shields.io/badge/header--only-yes-6B2FB5.svg)
+<!-- ══════════════════════ IDIOMAS / LANGUAGES ══════════════════════ -->
+<div align="center">
+<a href="README.md"><img src="https://img.shields.io/badge/Português-1987F0?style=for-the-badge" alt="Português"/></a>
+<a href="README.en.md"><img src="https://img.shields.io/badge/English-555555?style=for-the-badge" alt="English"/></a>
+<a href="README.es.md"><img src="https://img.shields.io/badge/Español-555555?style=for-the-badge" alt="Español"/></a>
+</div>
 
-A small, header-only, templated **Least-Recently-Used (LRU) cache** for modern
-C++17. Drop a single header into your project, pick your key and value types,
-and get a fixed-capacity cache with **O(1)** insert, lookup, and eviction.
+<div align="center">
+  <img src="assets/banner.svg" width="100%" alt="lru-cache-cpp"/>
+</div>
 
-## Features
+<h1 align="center">lru-cache-cpp</h1>
+<p align="center"><em>Cache LRU O(1), header-only e templated, pra C++17 moderno</em></p>
+<p align="center"><strong>unordered_map + lista duplamente ligada → put/get/evict em O(1)</strong></p>
 
-- **Header-only** — just include `lru_cache.hpp`, no build step, no linking.
-- **O(1) operations** — `put`, `get`, `contains`, and `erase` are all amortized
-  constant time.
-- **Templated** — works with any hashable key type and any value type.
-- **Recency-aware** — `get` refreshes an entry so frequently used keys survive
-  eviction.
-- **Non-mutating `peek`** — inspect a value without touching recency order or
-  statistics.
-- **Hit/miss statistics** — `stats()` reports cumulative `get` hits and misses,
-  and `reset_stats()` clears them.
-- **`std::optional` lookups** — a miss returns `std::nullopt`, no exceptions on
-  the hot path.
-- **Modern C++17**, no third-party dependencies.
+<div align="center">
+<img src="https://img.shields.io/badge/C%2B%2B-17-00599C?style=flat-square&logo=cplusplus&logoColor=white" alt="cpp17"/>
+<img src="https://img.shields.io/badge/build-CMake-064F8C?style=flat-square&logo=cmake&logoColor=white" alt="cmake"/>
+<img src="https://img.shields.io/badge/tests-CTest-2E7D32?style=flat-square" alt="ctest"/>
+<img src="https://img.shields.io/badge/header--only-yes-6B2FB5?style=flat-square" alt="header-only"/>
+<img src="https://img.shields.io/badge/License-MIT-2E7D32?style=flat-square" alt="license"/>
+</div>
 
-## Complexity
+<div align="center">
+<a href="#sobre"><img src="https://img.shields.io/badge/▸_SOBRE-1987F0?style=for-the-badge" alt="sobre"/></a>
+<a href="#como-funciona"><img src="https://img.shields.io/badge/▸_COMO_FUNCIONA-000000?style=for-the-badge" alt="funciona"/></a>
+<a href="#api"><img src="https://img.shields.io/badge/▸_API-1987F0?style=for-the-badge" alt="api"/></a>
+<a href="#uso"><img src="https://img.shields.io/badge/▸_USO-000000?style=for-the-badge" alt="uso"/></a>
+</div>
 
-| Operation        | Time   |
-| ---------------- | ------ |
-| `put`            | O(1)   |
-| `get`            | O(1)   |
-| `peek`           | O(1)   |
-| `contains`       | O(1)   |
-| `erase`          | O(1)   |
-| eviction (LRU)   | O(1)   |
-| `stats`/`reset_stats` | O(1) |
-| `size`/`capacity`| O(1)   |
+<br/>
 
-## API
+> 📦 **Header-only.** Só inclua `lru_cache.hpp` — sem build step, sem linkagem.
 
-| Method                       | Description                                                              |
-| ---------------------------- | ------------------------------------------------------------------------ |
-| `put(key, value)`            | Insert or update an entry and mark it most-recently-used.                |
-| `get(key) -> optional<V>`    | Look up a key, refresh its recency, and record a hit/miss in the stats.  |
-| `peek(key) -> optional<V>`   | Look up a key **without** changing recency order or statistics.          |
-| `contains(key) -> bool`      | Test for presence without affecting recency.                             |
-| `erase(key) -> bool`         | Remove an entry; returns whether one was removed.                        |
-| `clear()`                    | Remove all entries (statistics are unaffected).                          |
-| `stats() -> Stats`           | Cumulative `{ hits, misses }` accumulated by `get`.                      |
-| `reset_stats()`              | Reset the hit/miss counters to zero.                                     |
-| `size()` / `capacity()`      | Current entry count / maximum capacity.                                  |
-| `empty() -> bool`            | Whether the cache holds no entries.                                      |
+## Sobre
 
-## How it works
+Um cache **LRU (Least-Recently-Used)** pequeno, header-only e templated pra C++17 moderno. Escolha o tipo de chave e valor, e tenha um cache de capacidade fixa com inserção, busca e evicção em **O(1)**.
 
-The cache keeps a doubly linked list ordered from most- to least-recently-used,
-plus a hash map from each key to its node in that list. Lookups go through the
-map in O(1); on a hit or insert, the node is spliced to the front. When the
-cache is full, the entry at the tail (least recently used) is evicted.
+**Destaques:**
+- **Header-only** — sem build step, sem linkagem.
+- **Operações O(1)** — `put`, `get`, `contains` e `erase` são todas amortizadas em tempo constante.
+- **Templated** — funciona com qualquer tipo de chave hasheável e qualquer tipo de valor.
+- **Recency-aware** — `get` atualiza a entrada pra que chaves usadas com frequência sobrevivam à evicção.
+- **`peek` não-mutante** — inspeciona um valor sem alterar a ordem de recência ou as estatísticas.
+- **Estatísticas de hit/miss** — `stats()` reporta hits/misses cumulativos de `get`.
+- **Buscas com `std::optional`** — um miss retorna `std::nullopt`, sem exceções no caminho quente.
+
+## Como Funciona
+
+O cache mantém uma lista duplamente ligada ordenada do mais- ao menos-recentemente-usado, mais um hash map de cada chave pro seu nó nessa lista. Buscas passam pelo map em O(1); em um hit ou insert, o nó é movido pra frente. Quando o cache está cheio, a entrada na cauda (menos recentemente usada) é evictada.
 
 ```mermaid
 flowchart LR
     subgraph MAP["unordered_map&lt;Key, list::iterator&gt;"]
-        K1["key A"]
-        K2["key B"]
-        K3["key C"]
+        K1["chave A"]
+        K2["chave B"]
+        K3["chave C"]
     end
 
-    subgraph LIST["doubly-linked list (recency order)"]
+    subgraph LIST["lista duplamente ligada (ordem de recência)"]
         direction LR
         N1["A (MRU)"] <--> N2["B"] <--> N3["C (LRU)"]
     end
 
-    K1 -. O(1) lookup .-> N1
-    K2 -. O(1) lookup .-> N2
-    K3 -. O(1) lookup .-> N3
+    K1 -. lookup O(1) .-> N1
+    K2 -. lookup O(1) .-> N2
+    K3 -. lookup O(1) .-> N3
 
-    N3 -. evicted on overflow .-> X(("✕"))
+    N3 -. evictada no overflow .-> X(("✕"))
 ```
 
-## Usage
+## API
+
+| Método | Descrição |
+|---|---|
+| `put(key, value)` | Insere ou atualiza uma entrada e marca como mais-recentemente-usada |
+| `get(key) -> optional<V>` | Busca uma chave, atualiza sua recência, registra hit/miss |
+| `peek(key) -> optional<V>` | Busca **sem** mudar a ordem de recência ou estatísticas |
+| `contains(key) -> bool` | Testa presença sem afetar recência |
+| `erase(key) -> bool` | Remove uma entrada |
+| `clear()` | Remove todas as entradas |
+| `stats() -> Stats` | `{ hits, misses }` cumulativos de `get` |
+| `size()` / `capacity()` | Contagem atual / capacidade máxima |
+
+## Uso
 
 ```cpp
 #include "lru_cache.hpp"
-#include <iostream>
 
-int main() {
-    lru::LRUCache<int, std::string> cache(2);  // capacity = 2
-
-    cache.put(1, "one");
-    cache.put(2, "two");
-
-    std::cout << *cache.get(1) << "\n";  // one   (key 1 is now most-recently-used)
-
-    cache.put(3, "three");               // capacity exceeded -> evicts key 2 (LRU)
-
-    std::cout << cache.contains(2) << "\n";  // 0  (key 2 was evicted)
-    std::cout << cache.contains(1) << "\n";  // 1
-    std::cout << cache.contains(3) << "\n";  // 1
-
-    auto miss = cache.get(2);
-    std::cout << miss.has_value() << "\n";   // 0  (std::nullopt on a miss)
-
-    // peek inspects a value without promoting it or counting in the stats.
-    std::cout << *cache.peek(1) << "\n";     // one  (recency unchanged)
-
-    // stats() reports cumulative get() hits and misses (peek is not counted).
-    auto s = cache.stats();
-    std::cout << s.hits << " " << s.misses << "\n";  // 1 1
-    cache.reset_stats();
-}
+lru::LRUCache<int, std::string> cache(2);  // capacidade = 2
+cache.put(1, "one");
+cache.put(2, "two");
+std::cout << *cache.get(1) << "\n";  // one (agora é a mais recente)
+cache.put(3, "three");               // excede a capacidade -> evicta a chave 2
 ```
 
-Expected output:
-
-```
-one
-0
-1
-1
-0
-one
-1 1
-```
-
-## Building and testing
-
-This project uses CMake. To build and run the test suite:
-
+**Build & testes:**
 ```sh
 cmake -S . -B build
 cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-On Windows with MinGW-w64, select the matching generator:
-
-```sh
-cmake -S . -B build -G "MinGW Makefiles"
-cmake --build build
-ctest --test-dir build --output-on-failure
-```
-
-### Running tests
-
-```sh
-ctest --test-dir build --output-on-failure
-```
-
-The tests cover put/get basics, LRU eviction on overflow, recency refresh on
-`get`, updating an existing key without growing, `erase`/`clear`, the capacity
-boundary, `std::nullopt` on a miss, non-mutating `peek` (no recency change, no
-stats change), and hit/miss statistics with `reset_stats`.
-
-## Consuming the header
-
-Because the library is header-only, you can simply copy `include/lru_cache.hpp`
-into your project, or add the include directory to your build.
-
-With CMake, you can pull in the provided INTERFACE target:
-
+**Consumir o header** — copie `include/lru_cache.hpp` no seu projeto, ou via CMake:
 ```cmake
 add_subdirectory(lru-cache-cpp)
 target_link_libraries(your_target PRIVATE lru_cache::lru_cache)
 ```
 
-Then include it:
+## Licença
 
-```cpp
-#include "lru_cache.hpp"
-```
+[MIT](LICENSE).
 
-## License
+<div align="center">
+  <img src="https://file.loading.io/color/feature/thumb/Blues-8.png?" width="100%" height="10px" alt="divider"/>
+</div>
 
-Released under the [MIT License](LICENSE). Copyright (c) 2026 Geovana Grigorio.
+<p align="center"><sub>Desenvolvido por <strong><a href="https://github.com/geoggrigori">Grigori</a></strong> · 2026</sub></p>
