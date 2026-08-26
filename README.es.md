@@ -10,10 +10,6 @@
 <a href="README.es.md"><img src="https://img.shields.io/badge/Español-1987F0?style=for-the-badge" alt="Español"/></a>
 </div>
 
-<div align="center">
-  <img src="assets/banner.svg" width="100%" alt="lru-cache-cpp"/>
-</div>
-
 <h1 align="center">lru-cache-cpp</h1>
 <p align="center"><em>Caché LRU O(1), header-only y templated, para C++17 moderno</em></p>
 <p align="center"><strong>unordered_map + lista doblemente enlazada → put/get/evict en O(1)</strong></p>
