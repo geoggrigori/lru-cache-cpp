@@ -10,8 +10,6 @@
 <a href="README.es.md"><img src="https://img.shields.io/badge/Español-555555?style=for-the-badge" alt="Español"/></a>
 </div>
 
-![lru-cache-cpp](assets/banner.svg)
-
 ![C++17](https://img.shields.io/badge/C%2B%2B-17-blue.svg)
 ![CMake](https://img.shields.io/badge/build-CMake-064F8C.svg)
 ![CTest](https://img.shields.io/badge/tests-CTest-success.svg)
