@@ -14,10 +14,6 @@
 
 <br/>
 
-<h1 align="center">lru-cache-cpp</h1>
-<p align="center"><em>Cache LRU O(1), header-only e templated, pra C++17 moderno</em></p>
-<p align="center"><strong>unordered_map + lista duplamente ligada → put/get/evict em O(1)</strong></p>
-
 <div align="center">
 <img src="https://img.shields.io/badge/C%2B%2B-17-00599C?style=flat-square&logo=cplusplus&logoColor=white" alt="cpp17"/>
 <img src="https://img.shields.io/badge/build-CMake-064F8C?style=flat-square&logo=cmake&logoColor=white" alt="cmake"/>
