@@ -3,16 +3,12 @@
   <img src="docs/title-banner.svg" width="100%" alt="lru-cache-cpp"/>
 </div>
 
-<br/>
-
 <!-- ══════════════════════ IDIOMAS / LANGUAGES ══════════════════════ -->
 <div align="center">
 <a href="README.md"><img src="https://img.shields.io/badge/Português-555555?style=for-the-badge" alt="Português"/></a>
 <a href="README.en.md"><img src="https://img.shields.io/badge/English-1987F0?style=for-the-badge" alt="English"/></a>
 <a href="README.es.md"><img src="https://img.shields.io/badge/Español-555555?style=for-the-badge" alt="Español"/></a>
 </div>
-
-<br/>
 
 ![C++17](https://img.shields.io/badge/C%2B%2B-17-blue.svg)
 ![CMake](https://img.shields.io/badge/build-CMake-064F8C.svg)
